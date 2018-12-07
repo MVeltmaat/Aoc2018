@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonMetrics\CollectionHelper.cs" />
     <Compile Include="CommonMetrics\LevenshteinDistance.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Day01\Day1Executer.cs" />
@@ -63,6 +64,12 @@
     <Compile Include="Day05\Day5Executer.cs" />
     <Compile Include="Day05\Day5Logic.cs" />
     <Compile Include="Day05\Setup.cs" />
+    <Compile Include="Day_X\DayXExecuter.cs" />
+    <Compile Include="Day_X\DayXLogic.cs" />
+    <Compile Include="Day_X\Setup.cs" />
+    <Compile Include="Day07\Day7Executer.cs" />
+    <Compile Include="Day07\Day7Logic.cs" />
+    <Compile Include="Day07\Setup.cs" />
     <Compile Include="Day06\Day6Executer.cs" />
     <Compile Include="Day06\Day6Logic.cs" />
     <Compile Include="Day06\Setup.cs" />
@@ -79,6 +86,7 @@
     <Content Include="Day04\Day04A.txt" />
     <Content Include="Input\day05.txt" />
     <Content Include="Input\day06.txt" />
+    <Content Include="Input\day07.txt" />
     <Content Include="Input\day3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

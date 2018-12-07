@@ -26,8 +26,9 @@ namespace AOC
             //executers.Add(Day02.Setup.GetExecuter());
             //executers.Add(Day03.Setup.GetExecuter());
             //executers.Add(Day04.Setup.GetExecuter());
-            executers.Add(Day05.Setup.GetExecuter());
+            //executers.Add(Day05.Setup.GetExecuter());
             //executers.Add(Day06.Setup.GetExecuter());
+            executers.Add(Day07.Setup.GetExecuter());
 
             return executers;
         }

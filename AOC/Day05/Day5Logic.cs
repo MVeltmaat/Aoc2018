@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AOC.CommonMetrics;
 
 namespace AOC.Day05
 {
@@ -32,7 +33,7 @@ namespace AOC.Day05
                 reacted = reactionResult.Reacted;
             }
             reactionResult = ReactList(reactionResult.Remaining);
-            return GetStringFromCollection(reactionResult.Remaining);
+            return CollectionHelper.GetStringFromCollection(reactionResult.Remaining);
         }
 
         private ReactionResult ReactList(List<string> chars)
@@ -70,17 +71,7 @@ namespace AOC.Day05
             public List<string> Remaining { get; set; }
         }
 
-        public string GetStringFromCollection(ICollection<string> collection)
-        {
-            var builder = new StringBuilder();
-            builder.Append("");
-            foreach (var line in collection)
-            {
-                builder.Append(line);
-            }
-
-            return builder.ToString();
-        }
+        
 
         public bool React(string s1, string s2)
         {
