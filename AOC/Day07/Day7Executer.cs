@@ -23,8 +23,9 @@ namespace AOC.Day07
 
         public void Part2()
         {
-            var input = Input.Input.GetStringInput(Day);
-            var result = _day7.Initial();
+            var input = Input.Input.GetListInput(Day);
+            var steps = _day7.Parse(input);
+            var result = _day7.ComputeDuration(steps, 5, 60);
             Console.WriteLine($"Result to day {Day}, part 2 is {result} ");
         }
     }

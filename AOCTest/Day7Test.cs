@@ -33,6 +33,15 @@ namespace AOCTest
             Assert.AreEqual("CABDFE", result);
         }
 
+        [Test]
+        public void TestOrderWithWorkers()
+        {
+            var input = GetListInput();
+            var steps = _cut.Parse(input);
+            var result = _cut.ComputeDuration(steps, 2, 0);
+            Assert.AreEqual(15, result);
+        }
+
         internal List<string> GetListInput()
         {
             var path = Constants.TestPath + "Day07.txt";
