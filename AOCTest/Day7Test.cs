@@ -41,7 +41,7 @@ namespace AOCTest
             var result = _cut.ComputeDuration(steps, 2, 0);
             Assert.AreEqual(15, result);
         }
-
+        
         internal List<string> GetListInput()
         {
             var path = Constants.TestPath + "Day07.txt";

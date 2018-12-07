@@ -15,6 +15,7 @@ namespace AOC.Day07
 
     // p1: EPXKISWCFTZVJHDGNABLQYMORU -> fout
     // p1: EPWCFXKISTZVJHDGNABLQYMORU
+    // p2: 952
 
     public class Day7Logic : IDay7
     {
@@ -28,6 +29,33 @@ namespace AOC.Day07
             return input.Select(s => new Step(s)).ToList();
         }
 
+        public string ComputeOrder(List<Step> steps)
+        {
+            var dependencies = ComputeDependencies(steps);
+
+            var all = GetAllPossibleSteps(steps);
+            var dependencyValues = UpdateDependenciesWithMissingSteps(dependencies, all).Values.Select(x => x).ToList();
+
+            var firstFulfilledStep = dependencyValues.Where(v => v.IsBlockedBy.Count == 0).Select(d => d.Step).OrderBy(s => s).First();
+            var unfulfilledSteps = dependencyValues.Where(v => v.Step != firstFulfilledStep).Select(d => d.Step)
+                .OrderBy(s => s).ToList();
+            var fulfilled = new List<string> { firstFulfilledStep };
+
+            while (unfulfilledSteps.Any())
+            {
+                var remainingSteps = dependencyValues.Where(s => unfulfilledSteps.Contains(s.Step)).ToList();
+                Console.WriteLine($"Number of remaining steps: {remainingSteps.Count}");
+
+                var toFulfill = remainingSteps.Where(s => s.IsBlockedBy.TrueForAll(x => CanbeFulfilled(x, fulfilled))).OrderBy(l => l.Step).First();
+                fulfilled.Add(toFulfill.Step);
+                unfulfilledSteps.Remove(toFulfill.Step);
+            }
+
+            // Console.WriteLine(CollectionHelper.GetStringFromCollection(fulfilled));
+            
+            var result = CollectionHelper.GetStringFromCollection(fulfilled);
+            return result;
+        }
 
         public int ComputeDuration(List<Step> steps, int nrWorkers, int defaultTime)
         {
@@ -37,14 +65,10 @@ namespace AOC.Day07
             var dependencyValues = UpdateDependenciesWithMissingSteps(dependencies, all).Values.Select(x => x).ToList();
 
             var workers = InitializeWorkers(nrWorkers);
-
-            var availableWorkers = GetAvailableWorkers(workers, 0);
-            var firstFulfilledSteps = dependencyValues.Where(v => v.IsBlockedBy.Count == 0).Select(d => d.Step).OrderBy(s => s).Take(availableWorkers.Count).ToList();
-            Dictionary<string, int> taskDoneAt = new Dictionary<string, int>();
-            AssignTasksToWorker(firstFulfilledSteps, availableWorkers, 0, defaultTime, taskDoneAt);
-            
             var unfulfilledSteps = dependencyValues.Select(d => d.Step).OrderBy(s => s).ToList();
             var fulfilled = new List<string>();
+            
+            Dictionary<string, int> taskDoneAt = DetermineFirstTasksDoneAt(defaultTime, dependencyValues, workers);
 
             var maxTime = MaxTime(defaultTime);
 
@@ -59,9 +83,9 @@ namespace AOC.Day07
                 List<StepDependencies> remainingSteps =
                     unackkedSteps.Where(s => unfulfilledSteps.Contains(s.Step)).ToList();
 
-                Console.WriteLine($"Number of remaining unhandled steps: {remainingSteps.Count}");
+                // Console.WriteLine($"Number of remaining unhandled steps: {remainingSteps.Count}");
 
-                availableWorkers = GetAvailableWorkers(workers, time);
+                var availableWorkers = GetAvailableWorkers(workers, time);
                 var toFulfill = remainingSteps.Where(s => s.IsBlockedBy.TrueForAll(x => CanbeFulfilled(x, fulfilled)))
                     .OrderBy(l => l.Step).Take(availableWorkers.Count).ToList();
 
@@ -71,12 +95,21 @@ namespace AOC.Day07
             return 0;
         }
 
+        private Dictionary<string, int> DetermineFirstTasksDoneAt(int defaultTime, List<StepDependencies> dependencyValues, List<Worker> workers)
+        {
+            var availableWorkers = GetAvailableWorkers(workers, 0);
+            var firstFulfilledSteps = dependencyValues.Where(v => v.IsBlockedBy.Count == 0).Select(d => d.Step)
+                .OrderBy(s => s).Take(availableWorkers.Count).ToList();
+
+            var taskDoneAt = new Dictionary<string, int>();
+            AssignTasksToWorker(firstFulfilledSteps, availableWorkers, 0, defaultTime, taskDoneAt);
+            return taskDoneAt;
+        }
+
         private static List<StepDependencies> GetRemainingUnacknowledgedSteps(List<StepDependencies> dependencyValues,
             List<string> workersWorkingOn)
         {
             return dependencyValues.Where(s => workersWorkingOn.Contains(s.Step) == false).ToList();
-            //return dependencyValues
-            //    .Where(s => unfulfilledSteps.Contains(s.Step) && workersWorkingOn.Contains(s.Step) == false).ToList();
         }
 
         private List<string> GetBusyWorkersWorkingOn(List<Worker> workers, int time)
@@ -137,38 +170,7 @@ namespace AOC.Day07
         {
             return workers.Where(w => w.IsAvailable(time)).ToList();
         }
-
-
-        public string ComputeOrder(List<Step> steps)
-        {
-            var dependencies = ComputeDependencies(steps);
-
-            var all = GetAllPossibleSteps(steps);
-            var dependencyValues = UpdateDependenciesWithMissingSteps(dependencies, all).Values.Select(x => x).ToList();
-
-            var firstFulfilledStep = dependencyValues.Where(v => v.IsBlockedBy.Count == 0).Select(d => d.Step).OrderBy(s => s).First();
-            var unfulfilledSteps = dependencyValues.Where(v => v.Step != firstFulfilledStep).Select(d => d.Step)
-                .OrderBy(s => s).ToList();
-            var fulfilled = new List<string> {firstFulfilledStep};
-
-            while (unfulfilledSteps.Any())
-            {
-                var remainingSteps = dependencyValues.Where(s => unfulfilledSteps.Contains(s.Step)).ToList();
-                Console.WriteLine($"Number of remaining steps: {remainingSteps.Count}");
-
-                var toFulfill = remainingSteps.Where(s => s.IsBlockedBy.TrueForAll(x => CanbeFulfilled(x, fulfilled))).OrderBy(l => l.Step).First();
-                fulfilled.Add(toFulfill.Step);
-                unfulfilledSteps.Remove(toFulfill.Step);
-            }
-
-
-            Console.WriteLine(CollectionHelper.GetStringFromCollection(fulfilled));
-
-
-            var result = CollectionHelper.GetStringFromCollection(fulfilled);
-            return result;
-        }
-
+        
         private List<Worker> InitializeWorkers(int nrWorkers)
         {
             var workers = new List<Worker>();
@@ -226,81 +228,6 @@ namespace AOC.Day07
             }
 
             return stepDepDict;
-        }
-    }
-
-    public class Worker
-    {
-        public int Id { get; set; }
-        public List<Taakje> Taakjes { get; set; }
-
-        public bool IsAvailable(int time)
-        {
-            return Taakjes.Any(t => t.IsBusyOnTime(time)) == false;
-        }
-
-        public Worker()
-        {
-            Taakjes = new List<Taakje>();
-        }
-
-        public string WorkingOnStep(int time)
-        {
-            return Taakjes.FirstOrDefault(t => t.IsBusyOnTime(time))?.Step ?? "";
-        }
-    }
-
-    public class Taakje
-    {
-        public string Step { get; set; }
-        public int Start { get; set; }
-        public int Stop => Start + Duration;
-        public int Duration { get; set; }
-
-        public Taakje(int start, int duration, string step)
-        {
-            Start = start;
-            Duration = duration;
-            Step = step;
-        }
-
-        public bool IsBusyOnTime(int time)
-        {
-            return time >= Start && time < Stop;
-        }
-    }
-
-    public class StepDependencies
-    {
-        public string Step { get; set; }
-        public List<string> IsBlockedBy;
-
-        public StepDependencies()
-        {
-            IsBlockedBy = new List<string>();
-        }
-
-        public override string ToString()
-        {
-            return $"Step {Step} is blocked by {CollectionHelper.GetStringFromCollection(IsBlockedBy)}";
-        }
-    }
-
-    public class Step
-    {
-        public string MustBeFinished { get; set; }
-        public string BeforeCanBegin { get; set; }
-
-        public override string ToString()
-        {
-            return $"Step {MustBeFinished} must be finished before step {BeforeCanBegin} can begin.";
-        }
-
-        public Step(string s)
-        {
-            var words = s.Split(' ');
-            MustBeFinished = words[1];
-            BeforeCanBegin = words[7];
         }
     }
 }

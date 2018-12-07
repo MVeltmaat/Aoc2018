@@ -64,6 +64,10 @@
     <Compile Include="Day05\Day5Executer.cs" />
     <Compile Include="Day05\Day5Logic.cs" />
     <Compile Include="Day05\Setup.cs" />
+    <Compile Include="Day07\Step.cs" />
+    <Compile Include="Day07\StepDependencies.cs" />
+    <Compile Include="Day07\Taakje.cs" />
+    <Compile Include="Day07\Worker.cs" />
     <Compile Include="Day_X\DayXExecuter.cs" />
     <Compile Include="Day_X\DayXLogic.cs" />
     <Compile Include="Day_X\Setup.cs" />
