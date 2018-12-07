@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace AOC.Day05
 {
@@ -17,15 +16,15 @@ namespace AOC.Day05
         public void Part1()
         {
             var input = Input.Input.GetInputDay5();
-            var result = _day5.ReactPolymer(input);
+            var result = _day5.RemainingUnits(input);
             Console.WriteLine($"Result to day {Day}, part 1 is {result} ");
-            File.WriteAllText(Input.Output.GetOutputPath(Day), result);
+            //File.WriteAllText(Input.Output.GetOutputPath(Day), result);
         }
 
         public void Part2()
         {
             var input = Input.Input.GetInputDay5();
-            var result = 0;
+            var result = _day5.OptimizePolymer(input);
             Console.WriteLine($"Result to day {Day}, part 2 is {result} ");
         }
     }

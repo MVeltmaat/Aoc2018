@@ -8,6 +8,12 @@ namespace AOCTest
     {
         private Day5Logic _cut;
 
+        [SetUp]
+        public void Setup()
+        {
+            _cut = new Day5Logic();
+        }
+
         [TestCase("aA", "")]
         [TestCase("abBA", "")]
         [TestCase("abAB", "abAB")]
@@ -18,11 +24,23 @@ namespace AOCTest
             var result = _cut.ReactPolymer(input);
             Assert.AreEqual(expected, result);
         }
-        
-        [SetUp]
-        public void Setup()
+
+        [TestCase("aA", 0)]
+        [TestCase("abBA", 0)]
+        [TestCase("abAB", 4)]
+        [TestCase("aabAAB", 6)]
+        [TestCase("dabAcCaCBAcCcaDA", 10)]
+        public void TestRemainingUnits(string input, int expected)
         {
-            _cut = new Day5Logic();
+            var result = _cut.RemainingUnits(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        public void TestLengthAfterOptimization()
+        {
+            var input = "dabAcCaCBAcCcaDA";
+            var result = _cut.OptimizePolymer(input);
+            Assert.AreEqual(4, result);
         }
         
     }

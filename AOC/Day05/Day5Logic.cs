@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -6,11 +7,19 @@ namespace AOC.Day05
 {
     public interface IDay5
     {
+        int RemainingUnits(string input);
         string ReactPolymer(string input);
+        int OptimizePolymer(string input);
     }
 
     public class Day5Logic : IDay5
     {
+        public int RemainingUnits(string input)
+        {
+            var remaining = ReactPolymer(input);
+            return remaining.Length;
+        }
+
         public string ReactPolymer(string input)
         {
             var inputs = input.Select(i => i.ToString()).ToList();
@@ -22,7 +31,7 @@ namespace AOC.Day05
                 reactionResult = ReactList(reactionResult.Remaining);
                 reacted = reactionResult.Reacted;
             }
-
+            reactionResult = ReactList(reactionResult.Remaining);
             return GetStringFromCollection(reactionResult.Remaining);
         }
 
@@ -81,6 +90,35 @@ namespace AOC.Day05
             // a a -> 2up a A 1 up A a -> false ok
             // A a -> 2up A A (eq) 1up a A -> false 
             return s1.Equals(s2.ToUpper()) ^ s1.ToUpper().Equals(s2);
+        }
+
+        public int OptimizePolymer(string input)
+        {
+            List<string> options = GetOptions(input);
+            int lowest = input.Length;
+            foreach (var option in options)
+            {
+                string cleansedInput = GetCleansedInput(input, option);
+                var remainingLength = RemainingUnits(cleansedInput);
+                if (remainingLength < lowest)
+                    lowest = remainingLength;
+            }
+
+            return lowest;
+        }
+
+        private string GetCleansedInput(string input, string option)
+        {
+            var cleansed = input.Replace(option, "");
+            cleansed = cleansed.Replace(option.ToUpper(), "");
+            return cleansed;
+        }
+
+        private List<string> GetOptions(string input)
+        {
+            var list = input.ToLower().ToCharArray().Distinct();
+            Console.WriteLine(list.Count());
+            return list.Select(c => c.ToString()).ToList();
         }
     }
 }
